@@ -23,7 +23,7 @@ jobs:
       - name: Setup Android SDK
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget unzip
+          sudo apt-get install -y wget unzip zipalign
           mkdir -p $HOME/android-sdk/cmdline-tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O commandlinetools.zip
           unzip commandlinetools.zip -d $HOME/android-sdk/cmdline-tools
