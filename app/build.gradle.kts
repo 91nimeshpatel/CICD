@@ -61,8 +61,11 @@ android {
 
 // Ensure task dependencies are correctly set up
 tasks.whenTaskAdded {
-    if (name == "compileDebugKotlin") {
+    if (name == "kaptGenerateStubsDebugKotlin") {
         dependsOn("generateSafeArgsRelease")
+    }
+    if (name == "kaptGenerateStubsReleaseKotlin") {
+        dependsOn("generateSafeArgsDebug")
     }
 }
 
