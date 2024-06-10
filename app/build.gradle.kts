@@ -61,8 +61,8 @@ android {
 
 // Ensure task dependencies are correctly set up
 tasks.whenTaskAdded {
-    if (name.contains("kaptGenerateStubs")) {
-        mustRunAfter("generateSafeArgsDebug")
+    if (name == "compileDebugKotlin") {
+        dependsOn("generateSafeArgsRelease")
     }
 }
 
