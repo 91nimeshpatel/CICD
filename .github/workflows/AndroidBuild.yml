@@ -1,5 +1,5 @@
 name: AndroidBuild
-
+# This workflow is triggered on pull requests to the master branch, as well as pushes to the master branch.
 on:
   pull_request:
     branches: [master]
@@ -11,15 +11,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout
         uses: actions/checkout@v4.1.5
 
+      # Step 2: Setup Java JDK
       - name: Setup Java JDK
         uses: actions/setup-java@v4.2.1
         with:
           java-version: '17'
           distribution: 'adopt'
 
+      # Step 3: Setup Android SDK
       - name: Setup Android SDK
         run: |
           sudo apt-get update
@@ -32,47 +35,58 @@ jobs:
         env:
           ANDROID_SDK_ROOT: $HOME/android-sdk
 
+      # Step 4: Grant execute permission for gradlew
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      # Step 5: Create local.properties
       - name: Create local.properties
         run: echo "sdk.dir=$HOME/android-sdk" > local.properties
 
+      # Step 6: Build Debug APK
       - name: Build Debug APK
         run: ./gradlew assembleDebug
 
+      # Step 7: Upload Debug APK
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4.3.3
         with:
           name: Debug-APK
           path: app/build/outputs/apk/debug/app-debug.apk
 
+      # Step 8: Build Release APK
       - name: Build Release APK
         run: ./gradlew assembleRelease
 
+      # Step 9: Sign Release APK
       - name: Sign Release APK
         run: |
           jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA256 -keystore ${{ github.workspace }}/keystore/CICD.jks -storepass ${{ secrets.CICD_KEYSTORE_PASSWORD }} app/build/outputs/apk/release/app-release-unsigned.apk cicd
           zipalign -v 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release-signed.apk
 
+      # Step 10: Upload Signed Release APK
       - name: Upload Signed Release APK
         uses: actions/upload-artifact@v4.3.3
         with:
           name: Release-APK
           path: app/build/outputs/apk/release/app-release-signed.apk
 
+      # Step 11: Build Release App Bundle
       - name: Build Release App Bundle
         run: ./gradlew bundleRelease
 
+      # Step 12: Sign Release App Bundle
       - name: Sign Release App Bundle
         run: |
           jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA256 -keystore ${{ github.workspace }}/keystore/CICD.jks -storepass ${{ secrets.CICD_KEYSTORE_PASSWORD }} app/build/outputs/bundle/release/app-release.aab cicd
 
+      # Step 13: Upload Signed Release App Bundle
       - name: Upload Signed Release App Bundle
         uses: actions/upload-artifact@v4.3.3
         with:
           name: Release-App-Bundle
           path: app/build/outputs/bundle/release/app-release.aab
 
+      # Step 14: Install Zipalign (not needed if already installed)
       - name: Install Zipalign
         run: sudo apt-get install zipalign
