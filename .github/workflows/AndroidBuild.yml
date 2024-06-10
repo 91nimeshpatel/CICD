@@ -52,7 +52,7 @@ jobs:
 
       - name: Sign Release APK
         run: |
-          jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${{ github.workspace }}/keystore/CICD.jks -storepass ${{ secrets.CICD_KEYSTORE_PASSWORD }} app/build/outputs/apk/release/app-release-unsigned.apk cicd
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA256 -keystore ${{ github.workspace }}/keystore/CICD.jks -storepass ${{ secrets.CICD_KEYSTORE_PASSWORD }} app/build/outputs/apk/release/app-release-unsigned.apk cicd
           zipalign -v 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release-signed.apk
 
       - name: Upload Signed Release APK
@@ -66,10 +66,13 @@ jobs:
 
       - name: Sign Release App Bundle
         run: |
-          jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${{ github.workspace }}/keystore/CICD.jks -storepass ${{ secrets.CICD_KEYSTORE_PASSWORD }} app/build/outputs/bundle/release/app-release.aab cicd
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA256 -keystore ${{ github.workspace }}/keystore/CICD.jks -storepass ${{ secrets.CICD_KEYSTORE_PASSWORD }} app/build/outputs/bundle/release/app-release.aab cicd
 
       - name: Upload Signed Release App Bundle
         uses: actions/upload-artifact@v4.3.3
         with:
           name: Release-App-Bundle
           path: app/build/outputs/bundle/release/app-release.aab
+
+      - name: Install Zipalign
+        run: sudo apt-get install zipalign
