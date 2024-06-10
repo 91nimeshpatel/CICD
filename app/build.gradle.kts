@@ -59,14 +59,16 @@ android {
     }
 }
 
-dependencies {
+// Ensure task dependencies are correctly set up
+tasks.whenTaskAdded {
+    if (name.contains("kaptGenerateStubs")) {
+        mustRunAfter("generateSafeArgsDebug")
+    }
+}
 
+dependencies {
     // Android Architecture
-    implementation(
-        fileTree("libs") {
-            include("*.jar")
-        },
-    )
+    implementation(fileTree("libs") { include("*.jar") })
     implementation(libs.androidx.appcompat)
 
     // Android Kotlin
@@ -96,7 +98,7 @@ dependencies {
 
     // Data Binding Library for Androidx
     implementation(libs.databinding.compiler)
-    implementation(libs.androidx.frament.ktx)
+    implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.navigation.feature.fragment)
@@ -115,10 +117,10 @@ dependencies {
     kapt(libs.androidx.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.fragment)
 
-    //Google Play Services
+    // Google Play Services
     implementation(libs.play.services.location)
     implementation(libs.play.services.maps)
 
-    //Splash Screen API
+    // Splash Screen API
     implementation(libs.androidx.core.splashscreen)
 }
