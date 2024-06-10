@@ -2,9 +2,9 @@ name: AndroidBuild
 # This workflow is triggered on pull requests to the master branch, as well as pushes to the master branch.
 on:
   pull_request:
-    branches: [master]
+    branches: [ master ]
   push:
-    branches: [master]
+    branches: [ master ]
 
 jobs:
   build:
