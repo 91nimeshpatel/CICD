@@ -1,13 +1,15 @@
 name: AndroidBuild
+
 on:
   pull_request:
-    branches: [ master ]
+    branches: [master]
   push:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.5
@@ -50,7 +52,7 @@ jobs:
 
       - name: Sign Release APK
         run: |
-          jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${{ github.workspace }}/CICD/keystore/CICD.jks -storepass ${{ secrets.CICD_KEYSTORE_PASSWORD }} app/build/outputs/apk/release/app-release-unsigned.apk cicd
+          jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${{ github.workspace }}/keystore/CICD.jks -storepass ${{ secrets.CICD_KEYSTORE_PASSWORD }} app/build/outputs/apk/release/app-release-unsigned.apk cicd
           zipalign -v 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release-signed.apk
 
       - name: Upload Signed Release APK
@@ -64,7 +66,7 @@ jobs:
 
       - name: Sign Release App Bundle
         run: |
-          jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${{ github.workspace }}/CICD/keystore/CICD.jks -storepass ${{ secrets.CICD_KEYSTORE_PASSWORD }} app/build/outputs/bundle/release/app-release.aab cicd
+          jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${{ github.workspace }}/keystore/CICD.jks -storepass ${{ secrets.CICD_KEYSTORE_PASSWORD }} app/build/outputs/bundle/release/app-release.aab cicd
 
       - name: Upload Signed Release App Bundle
         uses: actions/upload-artifact@v4.3.3
