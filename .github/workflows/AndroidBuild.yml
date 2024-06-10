@@ -36,11 +36,38 @@ jobs:
       - name: Create local.properties
         run: echo "sdk.dir=$HOME/android-sdk" > local.properties
 
-      - name: Build With Gradle
-        run: ./gradlew build
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug
 
-      - name: Upload a Build Artifact
+      - name: Upload Debug APK
         uses: actions/upload-artifact@v4.3.3
         with:
-          name: CICD.apk
+          name: Debug-APK
           path: app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+
+      - name: Sign Release APK
+        run: |
+          jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${{ github.workspace }}/CICD/keystore/keystore.jks -storepass ${{ secrets.CICD_KEYSTORE_PASSWORD }} app/build/outputs/apk/release/app-release-unsigned.apk your_key_alias
+          zipalign -v 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release-signed.apk
+
+      - name: Upload Signed Release APK
+        uses: actions/upload-artifact@v4.3.3
+        with:
+          name: Release-APK
+          path: app/build/outputs/apk/release/app-release-signed.apk
+
+      - name: Build Release App Bundle
+        run: ./gradlew bundleRelease
+
+      - name: Sign Release App Bundle
+        run: |
+          jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${{ github.workspace }}/CICD/keystore/keystore.jks -storepass ${{ secrets.CICD_KEYSTORE_PASSWORD }} app/build/outputs/bundle/release/app-release.aab your_key_alias
+
+      - name: Upload Signed Release App Bundle
+        uses: actions/upload-artifact@v4.3.3
+        with:
+          name: Release-App-Bundle
+          path: app/build/outputs/bundle/release/app-release.aab
