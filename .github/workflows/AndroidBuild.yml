@@ -22,16 +22,19 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y wget unzip
-          wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O android-commandline-tools.zip
-          unzip -d android-sdk android-commandline-tools.zip
-          sudo mv android-sdk /usr/local/lib/android
-          yes | sudo /usr/local/lib/android/cmdline-tools/bin/sdkmanager --sdk_root=/usr/local/lib/android "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+          mkdir -p $HOME/android-sdk/cmdline-tools
+          wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O commandlinetools.zip
+          unzip commandlinetools.zip -d $HOME/android-sdk/cmdline-tools
+          mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+        env:
+          ANDROID_SDK_ROOT: $HOME/android-sdk
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Create local.properties
-        run: echo "sdk.dir=/usr/local/lib/android" > local.properties
+        run: echo "sdk.dir=$HOME/android-sdk" > local.properties
 
       - name: Build With Gradle
         run: ./gradlew build
