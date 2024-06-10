@@ -17,12 +17,19 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
-          
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
+
+      - name: Setup Android SDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+          android-sdk-version: 'latest'
+
+      - name: Create local.properties
+        run: echo "sdk.dir=$ANDROID_HOME" > local.properties
 
       - name: Build With Gradle
-        run:  ./gradlew build
+        run: ./gradlew build
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4.3.3
