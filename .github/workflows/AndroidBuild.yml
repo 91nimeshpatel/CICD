@@ -19,15 +19,19 @@ jobs:
           distribution: 'adopt'
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
-        with:
-          java-version: '17'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip
+          wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O android-commandline-tools.zip
+          unzip -d android-sdk android-commandline-tools.zip
+          sudo mv android-sdk /usr/local/lib/android
+          yes | sudo /usr/local/lib/android/cmdline-tools/bin/sdkmanager --sdk_root=/usr/local/lib/android "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Create local.properties
-        run: echo "sdk.dir=$ANDROID_HOME" > local.properties
+        run: echo "sdk.dir=/usr/local/lib/android" > local.properties
 
       - name: Build With Gradle
         run: ./gradlew build
